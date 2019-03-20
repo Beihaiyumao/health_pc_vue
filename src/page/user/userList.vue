@@ -1,6 +1,7 @@
 <template>
 	<div id="app">
-		<el-table :data="userLists">
+		<el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
+		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="userLists" tyle="width: 100%">
 			<!-- 组件的数据帮在这里:data="tableData" -->
 			<el-table-column prop="username" label="序号" width="180">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
@@ -25,16 +26,17 @@
 					</el-button>
 				</template>
 			</el-table-column>
-		</el-table>
-		<div>
-			<el-button-group>
-				<el-button @click="upPage" type="primary" icon="el-icon-arrow-left">上一页</el-button>
 
-				<el-button @click="downPage" type="primary">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-			</el-button-group>
-			<a>当前是第{{currentPage}}页</a>
-			<a>一共有{{total}}条数据</a>
-		</div>
+		</el-table>
+			<div>
+				<el-button-group>
+					<el-button @click="upPage" type="primary" icon="el-icon-arrow-left">上一页</el-button>
+
+					<el-button @click="downPage" type="primary">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+				</el-button-group>
+				<a>当前是第{{currentPage}}页</a>
+				<a>一共有{{total}}条数据</a>
+			</div>
 
 	</div>
 </template>
@@ -50,13 +52,13 @@
 				total: '',
 				isFirstPage: true,
 				isLastPage: false,
-				form: {
-					msg: 'ces',
-				},
+				msg: '',
 				userId: '',
+				loading: '',
 			}
 		},
 		mounted: function() {
+			this.loading = true;
 			this.getUserInfo();
 		},
 		methods: {
@@ -72,6 +74,7 @@
 					this.total = e.data.total;
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
+					this.loading = false;
 				})
 			},
 			//上一页
@@ -111,7 +114,7 @@
 				}).then(({
 					value
 				}) => {
-					this.form.msg = value;
+					this.msg = value;
 					this.deleteUser();
 				}).catch(() => {
 					this.$message({
@@ -124,11 +127,10 @@
 			deleteUser() {
 				this.$ajax({
 					method: 'get',
-					url: '/admin/blackUser?userId=' + this.userId + '&msg=' + this.form.msg,
+					url: '/admin/blackUser?userId=' + this.userId + '&msg=' + this.msg,
 				}).then(e => {
 					console.log(e);
 					if (e.data.code == 100) {
-						this.dialogFormVisible = false;
 						this.$message.success(e.data.msg);
 						this.getUserInfo();
 					} else {

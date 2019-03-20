@@ -1,6 +1,7 @@
 <template>
 	<div id="app">
-		<el-table :data="userLists">
+		<el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
+		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="userLists">
 			<!-- 组件的数据帮在这里:data="tableData" -->
 			<el-table-column prop="username" label="序号" width="180">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
@@ -51,9 +52,11 @@
 				total: '',
 				isFirstPage: true,
 				isLastPage: false,
+				loading:'',
 			}
 		},
 		mounted: function() {
+			this.loading=true;
 			this.getUserInfo();
 		},
 		methods: {
@@ -69,6 +72,7 @@
 					this.total = e.data.total;
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
+					this.loading=false;
 				})
 			},
 			//上一页
@@ -94,7 +98,7 @@
 						message: '当前是最后一页哦',
 						type: 'warning'
 					});
-					k
+					
 				}
 				this.getUserInfo();
 			},

@@ -1,6 +1,7 @@
 <template>
 	<div id="app">
-		<el-table :data="userLists">
+		<el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
+		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="userLists">
 			<!-- 组件的数据帮在这里:data="tableData" -->
 			<el-table-column prop="username" label="序号" width="180">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
@@ -20,7 +21,7 @@
 
 			<el-table-column label="操作" width="180">
 				<template slot-scope="scope">
-					<el-button @click="handleDelete(scope.row.userId)" size="small" type="danger">
+					<el-button @click="handleDelete(scope.row.doctorId)" size="small" type="danger">
 						拉黑
 					</el-button>
 				</template>
@@ -29,15 +30,12 @@
 		</el-table>
 		<div>
 			<el-button-group>
-  <el-button @click="upPage" type="primary" icon="el-icon-arrow-left">上一页</el-button>
-  <el-button @click="downPage" type="primary">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-</el-button-group>
-			<a>当前第{{currentPage}}页</a>
-			<i class="el-icon-arrow-left"></i>
-			<button @click="upPage">上一页</button>
-			<button @click="downPage">下一页</button>
-			<i class="el-icon-arrow-right"></i>
-			<a>一共{{total}}条数据</a>
+				<el-button @click="upPage" type="primary" icon="el-icon-arrow-left">上一页</el-button>
+
+				<el-button @click="downPage" type="primary">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+			</el-button-group>
+			<a>当前是第{{currentPage}}页</a>
+			<a>一共有{{total}}条数据</a>
 		</div>
 
 	</div>
@@ -54,9 +52,13 @@
 				total: '',
 				isFirstPage: true,
 				isLastPage: false,
+				doctorId:'',
+				msg:'',
+				loading:'',
 			}
 		},
 		mounted: function() {
+			this.loading=true;
 			this.getDoctorInfo();
 		},
 		methods: {
@@ -72,6 +74,7 @@
 					this.total = e.data.total;
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
+					this.loading=false;
 				})
 			},
 			//上一页
@@ -80,6 +83,10 @@
 					this.currentPage = this.currentPage - 1;
 				} else {
 					this.currentPage = 1;
+					this.$message({
+						message: '当前是第一页哦',
+						type: 'warning'
+					});
 				}
 				this.getDoctorInfo();
 
@@ -88,29 +95,49 @@
 			downPage() {
 				if (this.isLastPage == false) {
 					this.currentPage = this.currentPage + 1;
+				} else {
+					this.$message({
+						message: '当前是最后一页哦',
+						type: 'warning'
+					});
 				}
 				this.getDoctorInfo();
 			},
 			//拉黑
 			handleDelete(id) {
-				this.$confirm('此操作将拉黑用户, 是否继续?', '提示', {
+				this.doctorId = id;
+				this.$prompt('请输入拉黑原因', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
-					type: 'warning'
-				}).then(() => {
-					this.$axios.post("/user/delete", {
-						userIds: [id]
-					}).then(res => {
-						this.$message.success(res.msg)
-						this.getData()
-					})
+					inputPattern: /\S/,
+					inputErrorMessage: '请输入拉黑原因'
+				}).then(({
+					value
+				}) => {
+					this.msg = value;
+					this.deleteDoctor();
 				}).catch(() => {
 					this.$message({
 						type: 'info',
-						message: '已取消删除'
+						message: '取消拉黑'
 					});
 				});
 			},
+			//确定拉黑医生
+			deleteDoctor() {
+				this.$ajax({
+					method: 'get',
+					url: '/admin/blackDoctor?doctorId=' + this.doctorId + '&msg=' + this.msg,
+				}).then(e => {
+					console.log(e);
+					if (e.data.code == 100) {
+						this.$message.success(e.data.msg);
+						this.getDoctorInfo();
+					} else {
+						this.$message.error(e.data.msg);
+					}
+				})
+			}
 		}
 	}
 </script>
