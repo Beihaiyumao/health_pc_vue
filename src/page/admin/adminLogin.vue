@@ -17,7 +17,7 @@
 
 				<div id="tip"></div>
 				<div class="foot">
-					Copyright © 2018-2019 '爱尚健康' All Rights Reserved.
+					Copyright © 2019 UpHealth All Rights Reserved.
 				</div>
 			</form>
 		</div>
@@ -39,8 +39,11 @@ methods: {
 					method:'POST',
 					url:'/admin/adminLogin',
 					data:this.formData,
-				}).then(a=>{
-					console.log(a);
+				}).then(e=>{
+					console.log(e);
+					if(e.data.code==100){
+						this.$router.push("/navBar");
+					}
 				})
 			}
 		}
@@ -109,9 +112,9 @@ methods: {
 	}
 	
 	.login_form1 .text_value1 {
-		float: left;
-		margin-left: 29px;
-		padding-left: 10px;
+		
+		
+		padding-left: 20px;
 		padding-right: 10px;
 		margin-top: 15px;
 		width: 225px;
