@@ -3,23 +3,25 @@
 		<el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
 		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="userLists">
 			<!-- 组件的数据帮在这里:data="tableData" -->
-			<el-table-column prop="username" label="序号" width="180">
+			<el-table-column prop="username" label="序号" width="155">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
 			</el-table-column>
-			<el-table-column prop="username" label="用户名" width="180">
+			<el-table-column prop="username" label="用户名" width="155">
 			</el-table-column>
 
-			<el-table-column prop="password" label="密码" width="180">
+			<el-table-column prop="password" label="密码" width="155">
 			</el-table-column>
 
-			<el-table-column prop="email" label="邮箱" width="180">
+			<el-table-column prop="email" label="邮箱" width="155">
 			</el-table-column>
-			<el-table-column prop="phone" label="电话" width="180">
+			<el-table-column prop="phone" label="电话" width="155">
 			</el-table-column>
-			<el-table-column prop="address" label="家庭住址" width="180">
+			<el-table-column prop="address" label="家庭住址" width="155">
+			</el-table-column>
+			<el-table-column prop="blackMsg" label="拉黑原因" width="155">
 			</el-table-column>
 
-			<el-table-column label="操作" width="180">
+			<el-table-column label="操作" width="155">
 				<template slot-scope="scope">
 					<el-button @click="cancelDeleteUser(scope.row.userId)" size="small" type="danger">
 						取消拉黑
@@ -47,16 +49,16 @@
 		data() {
 			return {
 				userLists: [], //用户信息
-				photoUrl: 'https://xiaoyc.com.cn/health/',
 				currentPage: 1, //页数
-				total: '',
+				total: 0,
 				isFirstPage: true,
 				isLastPage: false,
-				loading:'',
+				loading: '',
+				userId: '',
 			}
 		},
 		mounted: function() {
-			this.loading=true;
+			this.loading = true;
 			this.getUserInfo();
 		},
 		methods: {
@@ -72,7 +74,7 @@
 					this.total = e.data.total;
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
-					this.loading=false;
+					this.loading = false;
 				})
 			},
 			//上一页
@@ -98,35 +100,39 @@
 						message: '当前是最后一页哦',
 						type: 'warning'
 					});
-					
+
 				}
 				this.getUserInfo();
 			},
 			//取消拉黑
 			cancelDeleteUser(id) {
-				this.$confirm('此操作将拉黑用户, 是否继续?', '提示', {
+				this.userId = id;
+				this.$confirm('确定取消拉黑该用户, 是否继续?', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					type: 'warning'
 				}).then(() => {
-					this.$axios.post("/user/delete", {
-						userIds: [id]
-					}).then(res => {
-						this.$message.success(res.msg)
-						this.getData()
-					})
+					this.sureCancelDeleteUser();
+
 				}).catch(() => {
 					this.$message({
 						type: 'info',
-						message: '已取消删除'
+						message: '已取消'
 					});
 				});
 			},
 			//确定取消拉黑用户
-			sureCancelDeleteUser(){
+			sureCancelDeleteUser() {
 				this.$ajax({
-					method:'get',
-					url:''
+					method: 'get',
+					url: '/admin/cancelBlackUser?userId=' + this.userId,
+				}).then(e => {
+					if (e.data.code == 100) {
+						this.$message.success(e.data.msg);
+						this.getUserInfo();
+					} else {
+						this.$message.error(e.data.msg);
+					}
 				})
 			}
 		}

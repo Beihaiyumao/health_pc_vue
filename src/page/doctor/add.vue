@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<el-form :model="doctor" :rules="rules" ref="doctor" label-width="100px" class="demo-ruleForm">
-			<el-form-item label="医生姓名" prop="doctorName" style='width: 40%; margin-left:30%;'>
-				<el-input v-model="doctor.doctorName"></el-input>
+			<el-form-item label="医生姓名" prop="username" style='width: 40%; margin-left:30%;'>
+				<el-input v-model="doctor.username"></el-input>
 			</el-form-item>
 			<el-form-item label="邮箱" prop="email" style='width: 40%; margin-left:30%;'>
 				<el-input v-model="doctor.email"></el-input>
@@ -16,12 +16,12 @@
 			<el-form-item label="电话" prop="phone" style='width: 40%; margin-left:30%;'>
 				<el-input v-model="doctor.phone"></el-input>
 			</el-form-item>
-			<el-form-item label="所属医院" prop="hostipal" style='width: 40%; margin-left:30%;'>
-				<el-input v-model="doctor.hostipal"></el-input>
+			<el-form-item label="所属医院" prop="hospital" style='width: 40%; margin-left:30%;'>
+				<el-input v-model="doctor.hospital"></el-input>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" @click="submitForm">提交</el-button>
-				<el-button @click="resetForm('doctor')">重置</el-button>
+				<el-button @click="resetForms('doctor')">重置</el-button>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -39,15 +39,15 @@
 			};
 			return {
 				doctor: {
-					doctorName: '',
+					username: '',
 					email: '',
 					password: '',
 					tpassword: '',
 					phone: '',
-					hostipal: '',
+					hospital: '',
 				},
 				rules: {
-					doctorName: [{
+					username: [{
 							required: true,
 							message: '请输入医生姓名',
 							trigger: 'blur'
@@ -109,7 +109,7 @@
 							trigger: 'blur'
 						}
 					],
-					hostipal: [{
+					hospital: [{
 							required: true,
 							message: '请输入所属医院',
 							trigger: 'blur'
@@ -128,8 +128,8 @@
 		},
 
 		methods: {
-			submitForm() {
-				console.log(this.doctor);
+			//提交
+			submitForm(formName) {
 				var checkUserInp = this.checkUserInput();
 				if (checkUserInp) {
 					this.$ajax({
@@ -142,19 +142,20 @@
 							this.$message.warning(e.data.msg);
 						} else {
 							this.$message.success(e.data.msg);
+							this.resetForms(formName);
 						}
 					})
 				}
 			},
 			//重置
-			resetForm(formName) {
+			resetForms(formName) {
 				this.$refs[formName].resetFields();
 			},
 			//检查用户输入情况
 			checkUserInput() {
 				var emailTrue = /^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/;
 				var phoneTrue = /^1[34578]\d{9}$/;
-				if (this.doctor.doctorName == '' || this.doctor.doctorName.length < 2 || this.doctor.doctorName.length > 4) {
+				if (this.doctor.username == '' || this.doctor.username.length < 2 || this.doctor.username.length > 4) {
 					this.$message.warning("请输入合法的姓名");
 					return false;
 				} else if (this.doctor.email == '' || !emailTrue.test(this.doctor.email)) {
@@ -169,7 +170,7 @@
 				} else if (this.doctor.phone == '' || !phoneTrue.test(this.doctor.phone)) {
 					this.$message.warning("请输入正确的电话");
 					return false;
-				} else if (this.doctor.hostipal == '' || this.doctor.hostipal.length < 5 || this.doctor.hostipal.length > 20) {
+				} else if (this.doctor.hospital == '' || this.doctor.hospital.length < 5 || this.doctor.hospital.length > 20) {
 					this.$message.warning("请输入合法的医院");
 					return false;
 				}

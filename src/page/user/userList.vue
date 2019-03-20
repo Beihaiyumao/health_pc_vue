@@ -47,9 +47,8 @@
 		data() {
 			return {
 				userLists: [], //用户信息
-				photoUrl: 'https://xiaoyc.com.cn/health/',
 				currentPage: 1, //页数
-				total: '',
+				total: 0,
 				isFirstPage: true,
 				isLastPage: false,
 				msg: '',

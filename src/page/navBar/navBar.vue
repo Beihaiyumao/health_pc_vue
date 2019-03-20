@@ -54,8 +54,8 @@
 						<span>管理员用户管理</span>
 					</template>
 					<el-menu-item-group>
-						<el-menu-item index="/navBar/users">用户列表</el-menu-item>
-						<el-menu-item index="/navBar/">新增管理员</el-menu-item>
+						<el-menu-item index="/navBar/adminList">管理员列表</el-menu-item>
+						<el-menu-item index="/navBar/addAdmin">新增管理员</el-menu-item>
 					</el-menu-item-group>
 				</el-submenu>
 				<el-submenu index="4">
@@ -65,12 +65,12 @@
 						<span>文章管理</span>
 					</template>
 					<el-menu-item-group>
-						<el-menu-item index="/navBar/">新增文章</el-menu-item>
-						<el-menu-item index="/navBar/users">评论列表</el-menu-item>
-						<el-menu-item index="/navBar/users">评论回复列表</el-menu-item>
-						<el-menu-item index="/navBar/users">待审核文章列表</el-menu-item>
-						<el-menu-item index="/navBar/">审核未通过列表</el-menu-item>
-						<el-menu-item index="/navBar/">审核已通过列表</el-menu-item>
+						<el-menu-item index="/navBar/addArticle">新增文章</el-menu-item>
+						<el-menu-item index="/navBar/commentList">评论列表</el-menu-item>
+						<el-menu-item index="/navBar/replyList">评论回复列表</el-menu-item>
+						<el-menu-item index="/navBar/waitExa">待审核文章列表</el-menu-item>
+						<el-menu-item index="/navBar/outExa">审核未通过列表</el-menu-item>
+						<el-menu-item index="/navBar/passExa">审核已通过列表</el-menu-item>
 					</el-menu-item-group>
 				</el-submenu>
 				<el-submenu index="5">
