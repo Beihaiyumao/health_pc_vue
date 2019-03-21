@@ -42,7 +42,10 @@ methods: {
 				}).then(e=>{
 					console.log(e);
 					if(e.data.code==100){
+						this.$message.success(e.data.msg);
 						this.$router.push("/navBar");
+					}else{
+						this.$message.error(e.data.msg);
 					}
 				})
 			}
