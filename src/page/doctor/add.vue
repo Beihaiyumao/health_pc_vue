@@ -13,6 +13,13 @@
 			<el-form-item label="确认密码" prop="tpassword" style='width: 40%; margin-left:30%;'>
 				<el-input type='password' v-model="doctor.tpassword"></el-input>
 			</el-form-item>
+			<el-form-item label="性别" prop="sex"  style='width: 40%; margin-left:30%;'>
+				<el-radio-group v-model="doctor.sex">
+					<el-radio :label="0">男</el-radio>
+					<el-radio :label="1">女</el-radio>
+				</el-radio-group>
+			</el-form-item>
+
 			<el-form-item label="电话" prop="phone" style='width: 40%; margin-left:30%;'>
 				<el-input v-model="doctor.phone"></el-input>
 			</el-form-item>
@@ -41,10 +48,11 @@
 				doctor: {
 					username: '',
 					email: '',
-					password: '',
-					tpassword: '',
+					password: '123456',
+					tpassword: '123456',
 					phone: '',
 					hospital: '',
+					sex:0,
 				},
 				rules: {
 					username: [{
@@ -121,6 +129,11 @@
 							trigger: 'blur'
 						}
 					],
+					sex:[{
+						required: true,
+						message: '请输入选择性别',
+						trigger: 'blur'
+					}],
 				}
 
 			}
@@ -167,7 +180,8 @@
 				} else if (this.doctor.tpassword != this.doctor.password) {
 					this.$message.warning("两次密码不一致");
 					return false;
-				} else if (this.doctor.phone == '' || !phoneTrue.test(this.doctor.phone)) {
+				}
+				else if (this.doctor.phone == '' || !phoneTrue.test(this.doctor.phone)) {
 					this.$message.warning("请输入正确的电话");
 					return false;
 				} else if (this.doctor.hospital == '' || this.doctor.hospital.length < 5 || this.doctor.hospital.length > 20) {

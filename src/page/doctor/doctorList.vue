@@ -1,24 +1,26 @@
 <template>
 	<div id="app">
 		<el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
-		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="userLists">
+		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="doctorList">
 			<!-- 组件的数据帮在这里:data="tableData" -->
-			<el-table-column prop="username" label="序号" width="180">
+			<el-table-column prop="username" label="序号" width="70">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
 			</el-table-column>
-			<el-table-column prop="username" label="姓名" width="180">
+			<el-table-column prop="username" label="姓名" width="150">
 			</el-table-column>
 
-			<el-table-column prop="password" label="密码" width="180">
+			<el-table-column prop="password" label="密码" width="150">
 			</el-table-column>
-
-			<el-table-column prop="email" label="邮箱" width="180">
+			<el-table-column prop="sex" label="性别" width="100">
 			</el-table-column>
-			<el-table-column prop="phone" label="电话" width="180">
+			<el-table-column prop="email" label="邮箱" width="150">
+			</el-table-column>
+			<el-table-column prop="phone" label="电话" width="150">
 			</el-table-column>
 			<el-table-column prop="hospital" label="所属医院" width="180">
 			</el-table-column>
-
+			<el-table-column prop="createTime" label="注册时间" width="180">
+			</el-table-column>
 			<el-table-column label="操作" width="180">
 				<template slot-scope="scope">
 					<el-button @click="handleDelete(scope.row.doctorId)" size="small" type="danger">
@@ -46,18 +48,18 @@
 		name: 'app',
 		data() {
 			return {
-				userLists: [], //用户信息
+				doctorList: [], //用户信息
 				currentPage: 1, //页数
 				total: 0,
 				isFirstPage: true,
 				isLastPage: false,
-				doctorId:'',
-				msg:'',
-				loading:'',
+				doctorId: '',
+				msg: '',
+				loading: '',
 			}
 		},
 		mounted: function() {
-			this.loading=true;
+			this.loading = true;
 			this.getDoctorInfo();
 		},
 		methods: {
@@ -69,12 +71,25 @@
 
 				}).then(e => {
 					console.log(e);
-					this.userLists = e.data.list;
+					this.doctorList = e.data.list;
 					this.total = e.data.total;
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
-					this.loading=false;
+					this.loading = false;
+					for (var i = 0; i < e.data.list.length; i++) {
+						this.doctorList[i].createTime = this.renderTime(e.data.list[i].createTime);
+						if (e.data.list[i].sex == 0) {
+							this.doctorList[i].sex = '男';
+						} else {
+							this.doctorList[i].sex = '女';
+						}
+					};
 				})
+			},
+			//时间转换
+			renderTime(date) {
+				var dateee = new Date(date).toJSON();
+				return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
 			},
 			//上一页
 			upPage() {

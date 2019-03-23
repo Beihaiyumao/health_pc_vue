@@ -3,16 +3,18 @@
 		<el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
 		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="commentList">
 			<!-- 组件的数据帮在这里:data="tableData" -->
-			<el-table-column prop="username" label="序号" width="180">
+			<el-table-column prop="username" label="序号" width="70">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
 			</el-table-column>
 			<el-table-column prop="content" label="评论内容" width="240">
 			</el-table-column>
 
-			<el-table-column prop="userName" label="评论者用户名" width="180">
+			<el-table-column prop="userName" label="评论者用户名" width="120">
 			</el-table-column>
 
-			<el-table-column prop="email" label="评论者邮箱" width="180">
+			<el-table-column prop="email" label="评论者邮箱" width="160">
+			</el-table-column>
+			<el-table-column prop="createTime" label="评论时间" width="160">
 			</el-table-column>
 			<el-table-column prop="articleName" label="所属文章标题" width="260">
 			</el-table-column>
@@ -76,7 +78,15 @@
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
 					this.loading = false;
+					for (var i = 0; i < e.data.list.length; i++) {
+						this.commentList[i].createTime = this.renderTime(e.data.list[i].createTime);
+					};
 				})
+			},
+			//时间转换
+			renderTime(date) {
+				var dateee = new Date(date).toJSON();
+				return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
 			},
 			//上一页
 			upPage() {

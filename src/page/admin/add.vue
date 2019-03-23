@@ -31,8 +31,8 @@
 			return {
 				admin: {
 					username: '',
-					password: '',
-					tpassword: '',
+					password: 'asd123',
+					tpassword: 'asd123',
 				},
 				rules: {
 					username: [{
@@ -106,7 +106,7 @@
 			},
 			//检查用户输入情况
 			checkUserInput() {
-				if (this.admin.username == '' || this.admin.username.length < 2 || this.admin.username.length > 4) {
+				if (this.admin.username == '' || this.admin.username.length < 4 || this.admin.username.length > 10) {
 					this.$message.warning("请输入合法的用户名");
 					return false;
 				} else if (this.admin.password == '' || this.admin.password.length < 6 || this.admin.password.length > 12) {

@@ -3,7 +3,7 @@
 		<el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
 		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="waitExaList">
 			<!-- 组件的数据帮在这里:data="tableData" -->
-			<el-table-column prop="username" label="序号" width="150">
+			<el-table-column prop="username" label="序号" width="100">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
 			</el-table-column>
 			<el-table-column prop="title" label="文章标题" width="180">
@@ -18,7 +18,7 @@
 
 			<el-table-column prop="author" label="作者" width="150">
 			</el-table-column>
-			<el-table-column prop="createTime" label="时间" width="240">
+			<el-table-column prop="createTime" label="文章创建时间" width="240">
 			</el-table-column>
 
 			<el-table-column label="操作" width="240">
@@ -79,7 +79,15 @@
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
 					this.loading = false;
+					for (var i = 0; i < e.data.list.length; i++) {
+						this.waitExaList[i].createTime = this.renderTime(e.data.list[i].createTime);
+					};
 				})
+			},
+			//时间转换
+			renderTime(date) {
+				var dateee = new Date(date).toJSON();
+				return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
 			},
 			//上一页
 			upPage() {
