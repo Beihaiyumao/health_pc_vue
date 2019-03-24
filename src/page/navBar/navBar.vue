@@ -80,8 +80,8 @@
 						<span>问题管理</span>
 					</template>
 					<el-menu-item-group>
-						<el-menu-item index="/navBar/">问题列表</el-menu-item>
-						<el-menu-item index="/navBar/users">问题回答列表</el-menu-item>
+						<el-menu-item index="/navBar/questionList">问题列表</el-menu-item>
+						<el-menu-item index="/navBar/questionAnswer">问题回答列表</el-menu-item>
 					</el-menu-item-group>
 				</el-submenu>
 				<el-submenu index="6">
@@ -91,7 +91,7 @@
 						<span>用户反馈</span>
 					</template>
 					<el-menu-item-group>
-						<el-menu-item index="/navBar/categoryIndex">用户反馈</el-menu-item>
+						<el-menu-item index="/navBar/feedback">用户反馈</el-menu-item>
 						<!-- <el-menu-item index="/navBar/users">用户管理页</el-menu-item> -->
 					</el-menu-item-group>
 				</el-submenu>

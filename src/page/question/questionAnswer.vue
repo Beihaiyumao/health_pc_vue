@@ -1,33 +1,33 @@
 <template>
 	<div id="app">
-		<el-table stripe  v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
-		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="commentList">
+		<el-table  stripe v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
+		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="questionAnswerList">
 			<!-- 组件的数据帮在这里:data="tableData" -->
-			<el-table-column prop="username" label="序号" width="70">
+			<el-table-column prop="username" label="序号" width="60">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
 			</el-table-column>
-			<el-table-column prop="content" label="评论内容" width="240">
+			<el-table-column prop="userName" label="提问者用户名" width="100">
 			</el-table-column>
-
-			<el-table-column prop="userName" label="评论者用户名" width="120">
+			<el-table-column prop="title" label="问题标题" width="150">
 			</el-table-column>
-
-			<el-table-column prop="email" label="评论者邮箱" width="160">
+			<el-table-column prop="sex" label="提问者性别" width="100">
 			</el-table-column>
-			<el-table-column prop="createTime" label="评论时间" width="160">
+			<el-table-column prop="createTime" label="提问时间" width="155">
 			</el-table-column>
-			<el-table-column prop="articleName" label="所属文章标题" width="260">
+			<el-table-column prop="doctorName" label="医生名字" width="100">
 			</el-table-column>
-
-			<el-table-column label="操作" width="200">
+			<el-table-column prop="answerDetail" label="回答内容" width="150">
+			</el-table-column>
+			<el-table-column prop="doctorEmail" label="医生邮箱" width="150">
+			</el-table-column>
+			<el-table-column prop="answerTime" label="回答时间" width="155">
+			</el-table-column>
+			<el-table-column label="操作" width="150">
 				<template slot-scope="scope">
-					<el-button @click="deleteComment(scope.row.commentId)" size="small" type="danger">
-						删除评论
+					<el-button @click="handleDelete(scope.row.answerId)" size="small" type="danger">
+						删除回答
 					</el-button>
-					<el-button @click="handleDelete(scope.row.userId)" size="small" type="danger">
-						拉黑用户
-					</el-button>
-				</template>
+				</template>				
 			</el-table-column>
 
 		</el-table>
@@ -49,37 +49,41 @@
 		name: 'app',
 		data() {
 			return {
-				commentList: [], //评论信息
+				questionAnswerList: [], //用户信息
 				currentPage: 1, //页数
 				total: 0,
 				isFirstPage: true,
 				isLastPage: false,
-				userId: '',
-				msg: '',
+				questionAnswerId: '',
 				loading: '',
-				commentId: '', //评论id
 			}
 		},
 		mounted: function() {
 			this.loading = true;
-			this.getCommentInfo();
+			this.getquestionAnswerList();
 		},
 		methods: {
-			//获取评论列表
-			getCommentInfo() {
+			//获取问题列表
+			getquestionAnswerList() {
 				this.$ajax({
 					method: 'get',
-					url: '/admin/allArticleComment?currentPage=' + this.currentPage,
+					url: '/question/selectAllAnswerQuestion?currentPage=' + this.currentPage,
 
 				}).then(e => {
 					console.log(e);
-					this.commentList = e.data.list;
+					this.questionAnswerList = e.data.list;
 					this.total = e.data.total;
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
 					this.loading = false;
 					for (var i = 0; i < e.data.list.length; i++) {
-						this.commentList[i].createTime = this.renderTime(e.data.list[i].createTime);
+						this.questionAnswerList[i].createTime = this.renderTime(e.data.list[i].createTime);
+						this.questionAnswerList[i].answerTime = this.renderTime(e.data.list[i].answerTime);
+						if (e.data.list[i].sex == 0) {
+							this.questionAnswerList[i].sex = '男';
+						} else {
+							this.questionAnswerList[i].sex = '女';
+						}
 					};
 				})
 			},
@@ -99,7 +103,7 @@
 						type: 'warning'
 					});
 				}
-				this.getCommentInfo();
+				this.getquestionAnswerList();
 
 			},
 			//下一页
@@ -112,51 +116,17 @@
 						type: 'warning'
 					});
 				}
-				this.getCommentInfo();
+				this.getquestionAnswerList();
 			},
-			//拉黑
+			//删除回答
 			handleDelete(id) {
-				this.userId = id;
-				this.$prompt('请输入拉黑原因', '提示', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
-					inputPattern: /\S/,
-					inputErrorMessage: '请输入拉黑原因'
-				}).then(({
-					value
-				}) => {
-					this.msg = value;
-					this.deleteUser();
-				}).catch(() => {
-					this.$message({
-						type: 'info',
-						message: '取消拉黑'
-					});
-				});
-			},
-			//确定拉黑用户
-			deleteUser() {
-				this.$ajax({
-					method: 'get',
-					url: '/admin/blackUser?userId=' + this.userId + '&msg=' + this.msg,
-				}).then(e => {
-					console.log(e);
-					if (e.data.code == 100) {
-						this.$message.success(e.data.msg);
-						this.getCommentInfo();
-					} else {
-						this.$message.error(e.data.msg);
-					}
-				})
-			},
-			deleteComment(id) {
-				this.commentId = id;
-				this.$confirm('确定删除此评论?', '提示', {
+				this.answerId = id;
+				this.$confirm('确定删除此回答?', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					type: 'warning'
 				}).then(() => {
-					this.suerDeleteComment();
+					this.suerDeleteuestionAnswer();
 				}).catch(() => {
 					this.$message({
 						type: 'info',
@@ -164,20 +134,21 @@
 					});
 				});
 			},
-			suerDeleteComment() {
+			//确定删除回答
+			suerDeleteuestionAnswer() {
 				this.$ajax({
 					method: 'get',
-					url: '/admin/deleteCommentById?commentId=' + this.commentId,
+					url: '/question/deleteQuestionAnswerById?answerId=' + this.answerId ,
 				}).then(e => {
 					console.log(e);
 					if (e.data.code == 100) {
 						this.$message.success(e.data.msg);
-						this.getCommentInfo();
+						this.getquestionAnswerList();
 					} else {
 						this.$message.error(e.data.msg);
 					}
 				})
-			},
+			}
 		}
 	}
 </script>

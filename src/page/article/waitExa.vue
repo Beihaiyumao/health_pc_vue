@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
+		<el-table  stripe  v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
 		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="waitExaList">
 			<!-- 组件的数据帮在这里:data="tableData" -->
 			<el-table-column prop="username" label="序号" width="100">
@@ -115,20 +115,9 @@
 				}
 				this.getWaitExaArticle();
 			},
-			//查看详情
+			//查看详情 params 不显示参数
 			getArticleInfo(id) {
-				this.$ajax({
-					method: 'get',
-					url: '/admin/blackUser?userId=' + this.userId + '&msg=' + this.msg,
-				}).then(e => {
-					console.log(e);
-					if (e.data.code == 100) {
-						this.$message.success(e.data.msg);
-						this.getWaitExaArticle();
-					} else {
-						this.$message.error(e.data.msg);
-					}
-				})
+				this.$router.push({path: '/navBar/articleInfo', query: {articleId: id}});
 			},
 			//审核通过文章
 			passExaArticle(id) {

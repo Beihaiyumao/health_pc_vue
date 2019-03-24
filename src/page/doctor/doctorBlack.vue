@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
+		<el-table stripe v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
 		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="doctorList">
 			<!-- 组件的数据帮在这里:data="tableData" -->
 			<el-table-column prop="username" label="序号" width="75">
@@ -134,7 +134,7 @@
 					});
 				});
 			},
-			//确定拉黑医生
+			//确定取消拉黑医生
 			sureCancelDeleteDoctor() {
 				this.$ajax({
 					method: 'get',

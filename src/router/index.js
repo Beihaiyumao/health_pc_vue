@@ -18,6 +18,11 @@ const components = {
 	waitExa: () => import('../page/article/waitExa'),
 	outExa: () => import('../page/article/outExa'),
 	passExa: () => import('../page/article/passExa'),
+	articleInfo: () => import('../page/article/articleInfo'),
+	questionList: () => import('../page/question/questionList'),
+	questionAnswer: () => import('../page/question/questionAnswer'),
+	questionInfo: () => import('../page/question/questionInfo'),
+	feedback:()=>import('../page/admin/feedback'),
 }
 
 export default new Router({
@@ -97,14 +102,14 @@ export default new Router({
 					},
 					component: components.addAdmin
 				},
-								{
+				{
 					path: "addArticle",
 					meta: {
 						title: "新增文章"
 					},
 					component: components.addArticle
 				},
-									{
+				{
 					path: "commentList",
 					meta: {
 						title: "评论列表"
@@ -118,29 +123,62 @@ export default new Router({
 					},
 					component: components.replyList
 				},
-								{
+				{
 					path: "waitExa",
 					meta: {
 						title: "待审核文章列表"
 					},
 					component: components.waitExa
 				},
-											{
+				{
 					path: "outExa",
 					meta: {
 						title: "审核未通过文章列表"
 					},
 					component: components.outExa
 				},
-															{
+				{
 					path: "passExa",
 					meta: {
 						title: "审核通过文章列表"
 					},
 					component: components.passExa
 				},
-				
-
+				{
+					path: "articleInfo",
+					meta: {
+						title: "文章详情"
+					},
+					component: components.articleInfo
+				},
+				{
+					path: "questionList",
+					meta: {
+						title: "问题列表"
+					},
+					component: components.questionList
+				},
+				{
+					path: "questionAnswer",
+					meta: {
+						title: "问题回答列表"
+					},
+					component: components.questionAnswer
+				},
+				{
+					path: "questionInfo",
+					meta: {
+						title: "问题详情"
+					},
+					component: components.questionInfo
+				},
+				{
+					path: "feedback",
+					meta: {
+						title: "用户反馈"
+					},
+					component: components.feedback
+				},
 			]
 		}
 

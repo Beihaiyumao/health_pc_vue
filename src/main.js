@@ -10,7 +10,7 @@ Vue.config.productionTip = false
 axios.defaults.withCredentials = true
 
 //axios.defaults.baseURL = 'https://xiaoyc.com.cn/health'
- axios.defaults.baseURL = 'http://localhost:8002'
+axios.defaults.baseURL = 'http://localhost:8002'
 Vue.prototype.$ajax = axios
 Vue.use(ElementUI)
 /* eslint-disable no-new */
