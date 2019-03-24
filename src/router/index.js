@@ -22,7 +22,8 @@ const components = {
 	questionList: () => import('../page/question/questionList'),
 	questionAnswer: () => import('../page/question/questionAnswer'),
 	questionInfo: () => import('../page/question/questionInfo'),
-	feedback:()=>import('../page/admin/feedback'),
+	feedback: () => import('../page/admin/feedback'),
+	changePassword: () => import('../page/admin/changePassword'),
 }
 
 export default new Router({
@@ -178,6 +179,13 @@ export default new Router({
 						title: "用户反馈"
 					},
 					component: components.feedback
+				},
+				{
+					path: "changePassword",
+					meta: {
+						title: "修改密码"
+					},
+					component: components.changePassword
 				},
 			]
 		}

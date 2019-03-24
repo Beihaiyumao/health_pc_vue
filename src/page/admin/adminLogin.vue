@@ -44,6 +44,9 @@ methods: {
 					if(e.data.code==100){
 						this.$message.success(e.data.msg);
 						this.$router.push("/navBar");
+						sessionStorage.setItem("username",e.data.object.username);
+						sessionStorage.setItem("adminId",e.data.object.adminId);
+						console.log(e);
 					}else{
 						this.$message.error(e.data.msg);
 					}

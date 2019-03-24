@@ -1,20 +1,19 @@
 <template>
 	<div class="navBar">
 		<div class="header ml-200">
-				<el-container>
+			<el-container>
 				<el-header style="text-align: right; font-size: 12px">
 					<span>UpHealth后台操作系统</span>
 					<el-dropdown>
 						<i class="el-icon-setting" style="margin-right: 15px"></i>
 						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item>查看</el-dropdown-item>
-							<el-dropdown-item>新增</el-dropdown-item>
-							<el-dropdown-item>删除</el-dropdown-item>
+							<el-dropdown-item><a @click="changePassword">修改密码</a></el-dropdown-item>
+							<el-dropdown-item><a @click="loginOut">退出登陆</a></el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
-					<span>王小虎</span>
+					<span>{{username}}</span>
 				</el-header>
-			
+
 			</el-container>
 		</div>
 
@@ -97,13 +96,29 @@
 		<div class="main-content ml-200">
 			<router-view></router-view>
 		</div>
-		
+
 	</div>
 </template>
 
 <script>
 	export default {
-
+		data() {
+			return {
+				username: '',
+			}
+		},
+		mounted: function() {
+			this.username = sessionStorage.getItem("username");
+		},
+		methods: {
+			changePassword() {
+				this.$router.push("/navBar/changePassword");
+			},
+			loginOut() {
+				sessionStorage.clear();
+				this.$router.push("/login");
+			}
+		}
 
 	};
 </script>
@@ -117,7 +132,7 @@
 		.title {
 			text-align: center;
 			font-weight: 300;
-			
+
 			height: 60px;
 			border-bottom: 1px solid #f1f1f1;
 			font-size: 20px;
@@ -157,9 +172,10 @@
 		margin-right: 40px;
 		margin-top: 5px;
 	}
+
 	.el-header {
-    background-color: #B3C0D1;
-    color: #333;
-    line-height: 60px;
-  }
+		background-color: #B3C0D1;
+		color: #333;
+		line-height: 60px;
+	}
 </style>
