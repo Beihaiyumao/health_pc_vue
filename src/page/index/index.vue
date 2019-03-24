@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div>test</div>
+		<div>辛苦</div>
 		<div>
 			<element></element>
 		</div>

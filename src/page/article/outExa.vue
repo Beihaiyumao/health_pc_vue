@@ -33,14 +33,10 @@
 			</el-table-column>
 
 		</el-table>
-		<div>
-			<el-button-group>
-				<el-button @click="upPage" type="primary" icon="el-icon-arrow-left">上一页</el-button>
-
-				<el-button @click="downPage" type="primary">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-			</el-button-group>
-			<a>当前是第{{currentPage}}页</a>
-			<a>一共有{{total}}条数据</a>
+		<div class="updown">
+			<el-pagination @size-change="handleSizeChange" @current-change="changeCurrentPage" :current-page="pageNum"
+			 :page-sizes="[10, 15, 20, 30]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
+			</el-pagination>
 		</div>
 
 	</div>
@@ -59,6 +55,9 @@
 				msg: '',
 				loading: '',
 				articleId: '', //文章id
+				pages: '', //一共多少页
+				pageNum: 1, //当前页数
+				pageSize: 10 //每页多少数据
 			}
 		},
 		mounted: function() {
@@ -70,7 +69,7 @@
 			getOutExaArticle() {
 				this.$ajax({
 					method: 'get',
-					url: '/admin/outHelthyArticle?currentPage=' + this.currentPage,
+					url: '/admin/outHelthyArticle?currentPage=' + this.currentPage + '&pageSize=' + this.pageSize,
 
 				}).then(e => {
 					console.log(e);
@@ -78,6 +77,9 @@
 					this.total = e.data.total;
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
+					this.pages = e.data.pages;
+					this.pageNum = e.data.pageNum;
+					this.pageSize = e.data.pageSize;
 					this.loading = false;
 					for (var i = 0; i < e.data.list.length; i++) {
 						this.outExaList[i].createTime = this.renderTime(e.data.list[i].createTime);
@@ -89,30 +91,15 @@
 				var dateee = new Date(date).toJSON();
 				return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
 			},
-			//上一页
-			upPage() {
-				if (this.isFirstPage == false) {
-					this.currentPage = this.currentPage - 1;
-				} else {
-					this.currentPage = 1;
-					this.$message({
-						message: '当前是第一页哦',
-						type: 'warning'
-					});
-				}
+			//选择第几页
+			changeCurrentPage(vl) {
+				this.currentPage = vl;
 				this.getOutExaArticle();
 
 			},
-			//下一页
-			downPage() {
-				if (this.isLastPage == false) {
-					this.currentPage = this.currentPage + 1;
-				} else {
-					this.$message({
-						message: '当前是最后一页哦',
-						type: 'warning'
-					});
-				}
+			//每页显示多少条数据
+			handleSizeChange(val) {
+				this.pageSize = val;
 				this.getOutExaArticle();
 			},
 			//查看详情
@@ -167,5 +154,12 @@
 <style>
 	#app {
 		margin-top: 0px;
+	}
+
+	.updown {
+		position: fixed;
+		right: 30%;
+		bottom: 0;
+
 	}
 </style>

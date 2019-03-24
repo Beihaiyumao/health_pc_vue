@@ -1,25 +1,21 @@
 <template>
 	<div class="navBar">
 		<div class="header ml-200">
-			<h1 class="title">
-				<span>UpHealth后台操作系统</span>
-				<el-dropdown class="user-handle">
-					<!-- <span class="el-dropdown-link" style="cursor: pointer;">
-                        用户管理<i class="el-icon-arrow-down el-icon--right"></i>
-                        </span> -->
-					<div class="avatar-wrap">
-						<!-- 			<img :src="userInfo.avatar" style="width:50px;height:50px"> -->
-					</div>
-					<el-dropdown-menu slot="dropdown">
-						<el-dropdown-item @click.native="handlePerson">
-							个人中心
-						</el-dropdown-item>
-						<el-dropdown-item @click.native="handleLogout">
-							退出登录
-						</el-dropdown-item>
-					</el-dropdown-menu>
-				</el-dropdown>
-			</h1>
+				<el-container>
+				<el-header style="text-align: right; font-size: 12px">
+					<span>UpHealth后台操作系统</span>
+					<el-dropdown>
+						<i class="el-icon-setting" style="margin-right: 15px"></i>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item>查看</el-dropdown-item>
+							<el-dropdown-item>新增</el-dropdown-item>
+							<el-dropdown-item>删除</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
+					<span>王小虎</span>
+				</el-header>
+			
+			</el-container>
 		</div>
 
 		<div class="sider-bar">
@@ -95,55 +91,19 @@
 						<!-- <el-menu-item index="/navBar/users">用户管理页</el-menu-item> -->
 					</el-menu-item-group>
 				</el-submenu>
-				
+
 			</el-menu>
 		</div>
 		<div class="main-content ml-200">
 			<router-view></router-view>
 		</div>
+		
 	</div>
 </template>
 
 <script>
-	import {
-		mapState
-	} from "vuex"
 	export default {
-		name: "navBar",
-		computed: {
-			routes() {
-				return this.$router.matched
-			},
-			...mapState(["userInfo"])
-		},
-		methods: {
-			handlePerson() {
-				this.$router.push("/navBar/userEdit")
-			},
-			handleLogout() {
-				this.$axios.get("/logout").then(res => {
-					if (res.code == 200) {
-						//   let payload={
-						//       userInfo:"",
-						//       avatar:"",
-						//       email:"",
-						//       desc:""
-						//   }
-						this.$message.success("退出登录成功")
-						//   this.$store.commit("SET_USERINFO",payload)
-						this.$router.push("/login")
-					} else {
-						this.$massage.error(res.msg)
-					}
-				}).catch(err => {
-					this.$message.error(err)
-				})
-			}
-		},
-		created() {
-			console.log(this.$route)
-			console.log(this.$router)
-		}
+
 
 	};
 </script>
@@ -156,8 +116,8 @@
 	.navBar {
 		.title {
 			text-align: center;
-			font-weight: 600;
-			line-height: 60px;
+			font-weight: 300;
+			
 			height: 60px;
 			border-bottom: 1px solid #f1f1f1;
 			font-size: 20px;
@@ -197,4 +157,9 @@
 		margin-right: 40px;
 		margin-top: 5px;
 	}
+	.el-header {
+    background-color: #B3C0D1;
+    color: #333;
+    line-height: 60px;
+  }
 </style>

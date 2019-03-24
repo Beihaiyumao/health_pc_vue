@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<el-table  stripe v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
+		<el-table stripe v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
 		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="feedbackList">
 			<!-- 组件的数据帮在这里:data="tableData" -->
 			<el-table-column prop="username" label="序号" width="100">
@@ -24,18 +24,14 @@
 					<el-button @click="handleDelete(scope.row.userFeedbackId)" size="small" type="danger">
 						删除
 					</el-button>
-				</template>				
+				</template>
 			</el-table-column>
 
 		</el-table>
-		<div>
-			<el-button-group>
-				<el-button @click="upPage" type="primary" icon="el-icon-arrow-left">上一页</el-button>
-
-				<el-button @click="downPage" type="primary">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-			</el-button-group>
-			<a>当前是第{{currentPage}}页</a>
-			<a>一共有{{total}}条数据</a>
+		<div class="updown">
+			<el-pagination @size-change="handleSizeChange" @current-change="changeCurrentPage" :current-page="pageNum"
+			 :page-sizes="[10, 15, 20, 30]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
+			</el-pagination>
 		</div>
 
 	</div>
@@ -46,14 +42,17 @@
 		name: 'app',
 		data() {
 			return {
-				feedbackList: [], 
+				feedbackList: [],
 				currentPage: 1, //页数
 				total: 0,
 				isFirstPage: true,
 				isLastPage: false,
 				userFeedbackId: '',
 				loading: '',
-				msg:'',
+				msg: '',
+				pages: '', //一共多少页
+				pageNum: 1, //当前页数
+				pageSize: 10 //每页多少数据
 			}
 		},
 		mounted: function() {
@@ -61,11 +60,11 @@
 			this.getUserFeedback();
 		},
 		methods: {
-			//获取问题列表
+			//获取用户反馈列表
 			getUserFeedback() {
 				this.$ajax({
 					method: 'get',
-					url: '/admin/selectFeedback?currentPage=' + this.currentPage+ '&msg=' + this.msg,
+					url: '/admin/selectFeedback?currentPage=' + this.currentPage + '&msg=' + this.msg + '&pageSize=' + this.pageSize,
 
 				}).then(e => {
 					console.log(e);
@@ -73,6 +72,9 @@
 					this.total = e.data.total;
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
+					this.pages = e.data.pages;
+					this.pageNum = e.data.pageNum;
+					this.pageSize = e.data.pageSize;
 					this.loading = false;
 					for (var i = 0; i < e.data.list.length; i++) {
 						this.feedbackList[i].createTime = this.renderTime(e.data.list[i].createTime);
@@ -84,30 +86,15 @@
 				var dateee = new Date(date).toJSON();
 				return new Date(+new Date(dateee) + 8 * 3600 * 1550).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
 			},
-			//上一页
-			upPage() {
-				if (this.isFirstPage == false) {
-					this.currentPage = this.currentPage - 1;
-				} else {
-					this.currentPage = 1;
-					this.$message({
-						message: '当前是第一页哦',
-						type: 'warning'
-					});
-				}
+			//选择第几页
+			changeCurrentPage(vl) {
+				this.currentPage = vl;
 				this.getUserFeedback();
 
 			},
-			//下一页
-			downPage() {
-				if (this.isLastPage == false) {
-					this.currentPage = this.currentPage + 1;
-				} else {
-					this.$message({
-						message: '当前是最后一页哦',
-						type: 'warning'
-					});
-				}
+			//每页显示多少条数据
+			handleSizeChange(val) {
+				this.pageSize = val;
 				this.getUserFeedback();
 			},
 			//删除反馈
@@ -130,7 +117,7 @@
 			suerDeleteFeedback() {
 				this.$ajax({
 					method: 'get',
-					url: '/admin/deleteFeedback?userFeedbackId=' + this.userFeedbackId ,
+					url: '/admin/deleteFeedback?userFeedbackId=' + this.userFeedbackId,
 				}).then(e => {
 					console.log(e);
 					if (e.data.code == 100) {
@@ -148,5 +135,12 @@
 <style>
 	#app {
 		margin-top: 0px;
+	}
+
+	.updown {
+		position: fixed;
+		right: 30%;
+		bottom: 0;
+
 	}
 </style>
