@@ -1,155 +1,140 @@
 <template>
 	<div>
-		<div class="login">
-			<div id="myAlert2" class="alert alert-warning">
-				<a href="#" class="close" data-dismiss="alert">&times;</a>
-				<p style="text-align: center;"></p>
-			</div>
-			<form id="form">
-				<div class="logo"></div>
-				<div class="login_form1">
-					<div class="user" v-model="formData">
-						<input class="text_value1" v-model="formData.username" value="" name="username" type="text" id="username" placeholder="用户名">
-						<input class="text_value1" v-model="formData.password" value="" name="password" type="password" id="password" placeholder="登录密码">
-					</div>
-					<button class="button"  @click="adminLogin">登录</button>
-				</div>
+		<body class="login-page sidebar-collapse">
+			<div class="page-header" filter-color="orange">
+				<div class="page-header-image" style="background-image: url(../../assets/img/login.jpg);"></div>
+				<div class="container">
+					<div class="col-md-4 content-center">
+						<div class="card card-login card-plain">
+							<form class="form" method="" action="" v-model="formData">
+								<div class="header header-primary text-center">
+									<div class="logo-container">
+										<img src="../../assets/img/logo.png" alt="">
+									</div>
+								</div>
+								<div class="content">
+									<div class="input-group form-group-no-border input-lg">
+										<span class="input-group-addon">
+											<i class="now-ui-icons users_circle-08"></i>
+										</span>
+										<input type="text" v-model="formData.username" class="form-control" placeholder="用户名">
+									</div>
+									<div class="input-group form-group-no-border input-lg">
+										<span class="input-group-addon">
+											<i class="now-ui-icons text_caps-small"></i>
+										</span>
+										<input type="password" v-model="formData.password" placeholder="密码" class="form-control" />
+									</div>
+									<div style="margin-top: 20px;">
+										<el-radio v-model="role" label="1" border size="medium" style="color: #ebebeb;">管理员</el-radio>
+										<el-radio v-model="role" label="2" border size="medium" style="color: #ebebeb;">医生用户</el-radio>
+									</div>
+								</div>
+								<div class="footer text-center">
+									<a @click="login" class="btn btn-primary btn-round btn-lg btn-block">登陆</a>
+								</div>
 
-				<div id="tip"></div>
-				<div class="foot">
-					Copyright © 2019 UpHealth All Rights Reserved.
+							</form>
+						</div>
+					</div>
 				</div>
-			</form>
-		</div>
+				<footer class="footer">
+					<div class="container">
+						<div class="copyright">
+							Copyright © 2019 UpHealth All Rights Reserved.
+						</div>
+					</div>
+				</footer>
+			</div>
+		</body>
 	</div>
 </template>
 
 <script>
-	export default{
-		data(){
-			return{
+	export default {
+		data() {
+			return {
 				formData: {
-					username:'',
-					password:''},
-}
-},
-methods: {
-		adminLogin() {
-			this.$ajax({
-					method:'POST',
-					url:'/admin/adminLogin',
-					data:this.formData,
-				}).then(e=>{
+					username: '',
+					password: '',
+					email: '',
+				},
+				role: '1',
+			}
+		},
+		methods: {
+			login() {
+				console.log(this.role);
+				if (this.role == 1) {
+					this.adminLogin();
+				} else {
+					this.doctorLogin();
+				}
+			},
+			//管理员登陆
+			adminLogin() {
+				this.$ajax({
+					method: 'POST',
+					url: '/admin/adminLogin',
+					data: this.formData,
+				}).then(e => {
 					console.log(e);
-					if(e.data.code==100){
+					if (e.data.code == 100) {
 						this.$message.success(e.data.msg);
 						this.$router.push("/navBar");
-						sessionStorage.setItem("username",e.data.object.username);
-						sessionStorage.setItem("adminId",e.data.object.adminId);
+						sessionStorage.setItem("username", e.data.object.username);
+						sessionStorage.setItem("adminId", e.data.object.adminId);
+						sessionStorage.setItem("admin", 200);
 						console.log(e);
-					}else{
+					} else {
 						this.$message.error(e.data.msg);
 					}
 				})
-			}
+			},
+			//医生登录
+			doctorLogin() {
+				this.formData.email = this.formData.username;
+				this.$ajax({
+					method: 'POST',
+					url: '/doctor/doctorLogin',
+					data: this.formData,
+				}).then(e => {
+					console.log(e);
+					if (e.data.code == 100) {
+						this.$message.success(e.data.msg);
+						this.$router.push("/navBar");
+						sessionStorage.setItem("username", e.data.object.username);
+						sessionStorage.setItem("doctorId", e.data.object.doctorId);
+						sessionStorage.setItem("doctor", 200);
+						console.log(e);
+					} else {
+						this.$message.error(e.data.msg);
+					}
+				})
+			},
+
 		}
 	}
 </script>
-
 <style>
-	html,
-	body {
+	@import url("../../../static/css/bootstrap.min.css");
+	@import url("../../../static/css/demo.css");
+	@import url("../../../static/css/now-ui-kit.css");
+</style>
+<style>
+	/* 	div {
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
 		margin: 0;
-		font-family: 'microsoft yahei';
-		background-image: url(../../assets/images/login/login_bg.jpg);
+		font-family: 'microsoft yahei'; 
+		background-image: url(../../assets/img/login.jpg);
+	} */
+	body {
+		background-image: url(../../assets/img/login.jpg);
 	}
-	
-	html {
-		_height: auto;
-		_padding: 50px 0 0px;
-	}
-	
-	.login {
-		width: 640px;
-		height: 400px;
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		margin-left: -320px;
-		margin-top: -200px;
-	}
-	
-	.logo {
-		background-image: url(../../assets/images/login/admin_logo.png);
-		background-repeat: no-repeat;
-		background-position: 30px center;
-		height: 150px;
-	}
-	
-	.login_form1 {
-		height: 80px;
-		margin-left: auto;
-		margin-right: auto;
-		width: 600px;
-	}
-	
-	.login_form1 .user {
-		background-image: url(../../assets/images/login/login_name_bg.jpg);
-		width: 540px;
-		height: 80px;
-		float: left;
-	}
-	
-	.login_form1 .button {
-		background: url(../../assets/images/login/login_button.jpg);
-		width: 50px;
-		background-repeat: no-repeat;
-		background-position: left center;
-		height: 54px;
-		float: left;
-		display: block;
-		text-indent: -9999px;
-		border: none;
-		margin-top: 10px;
-		position: relative
-	}
-	
-	.login_form1 .text_value1 {
-		
-		
-		padding-left: 20px;
-		padding-right: 10px;
-		margin-top: 15px;
-		width: 225px;
-		height: 50px;
-		line-height: 50px;
-		font-size: 16px;
-		color: #666;
-		font-weight: bold;
-		border: none;
-		background-color: #f5f6f7
-	}
-	
-	.foot {
-		padding-top: 30px;
-		text-align: center;
-		color: #FFF;
-		padding-right: 80px;
-	}
-	
-	#tip {
-		padding-top: 10px;
-		color: #FFF;
-		background-image: none;
-		text-align: center;
-		padding-right: 80px;
-		font-size: 14px;
-	}
-	
-	#myAlert2 {
-		display: none;
+
+	#app {
+		margin-top: 0px;
 	}
 </style>

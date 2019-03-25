@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div>辛苦</div>
+		
 		<div>
 			<element></element>
 		</div>
@@ -27,4 +27,7 @@
 </script>
 
 <style>
+	#app {
+		margin-top: 0px;
+	}
 </style>

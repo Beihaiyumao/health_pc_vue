@@ -19,7 +19,7 @@
 
 		<div class="sider-bar">
 			<el-menu :router="true" background-color="#545c64" text-color="#fff">
-				<el-submenu index="1">
+				<el-submenu index="1" v-if="doctor">
 					<template slot="title">
 						<i class="el-icon-news"></i>
 						<!-- <span>导航一</span> -->
@@ -30,7 +30,7 @@
 						<el-menu-item index="/navBar/userBlack">用户黑名单</el-menu-item>
 					</el-menu-item-group>
 				</el-submenu>
-				<el-submenu index="2">
+				<el-submenu index="2" v-if="doctor">
 					<template slot="title">
 						<i class="el-icon-news"></i>
 						<!-- <span>导航一</span> -->
@@ -42,7 +42,7 @@
 						<el-menu-item index="/navBar/doctorBlack">医生黑名单</el-menu-item>
 					</el-menu-item-group>
 				</el-submenu>
-				<el-submenu index="3" v-if="adminState">
+				<el-submenu index="3" v-if="adminState || doctor">
 					<template slot="title">
 						<i class="el-icon-news"></i>
 						<!-- <span>导航一</span> -->
@@ -61,11 +61,12 @@
 					</template>
 					<el-menu-item-group>
 						<el-menu-item index="/navBar/addArticle">新增文章</el-menu-item>
-						<el-menu-item index="/navBar/commentList">评论列表</el-menu-item>
-						<el-menu-item index="/navBar/replyList">评论回复列表</el-menu-item>
-						<el-menu-item index="/navBar/waitExa">待审核文章列表</el-menu-item>
-						<el-menu-item index="/navBar/outExa">审核未通过列表</el-menu-item>
-						<el-menu-item index="/navBar/passExa">审核已通过列表</el-menu-item>
+						<el-menu-item index="/navBar/commentList" v-if="doctor">评论列表</el-menu-item>
+						<el-menu-item index="/navBar/replyList" v-if="doctor">评论回复列表</el-menu-item>
+						<el-menu-item index="/navBar/waitExa" v-if="doctor">待审核文章列表</el-menu-item>
+						<el-menu-item index="/navBar/outExa" v-if="doctor">审核未通过列表</el-menu-item>
+						<el-menu-item index="/navBar/passExa" v-if="doctor">审核已通过列表</el-menu-item>
+						<el-menu-item index="/navBar/passExa" v-if="admin">我发布的文章</el-menu-item>
 					</el-menu-item-group>
 				</el-submenu>
 				<el-submenu index="5">
@@ -76,10 +77,11 @@
 					</template>
 					<el-menu-item-group>
 						<el-menu-item index="/navBar/questionList">问题列表</el-menu-item>
-						<el-menu-item index="/navBar/questionAnswer">问题回答列表</el-menu-item>
+						<el-menu-item index="/navBar/questionAnswer" v-if="doctor">问题回答列表</el-menu-item>
+						<el-menu-item index="/navBar/questionAnswer" v-if="admin">我回答的列表</el-menu-item>
 					</el-menu-item-group>
 				</el-submenu>
-				<el-submenu index="6">
+				<el-submenu index="6" v-if="doctor">
 					<template slot="title">
 						<i class="el-icon-message"></i>
 						<!-- <span>导航一</span> -->
@@ -87,6 +89,16 @@
 					</template>
 					<el-menu-item-group>
 						<el-menu-item index="/navBar/feedback">用户反馈</el-menu-item>
+					</el-menu-item-group>
+				</el-submenu>
+				<el-submenu index="7" v-if="admin" >
+					<template slot="title">
+						<i class="el-icon-message"></i>
+						<!-- <span>导航一</span> -->
+						<span>个人中心</span>
+					</template>
+					<el-menu-item-group>
+						<el-menu-item index="/navBar/doctorInfo">修改个人资料</el-menu-item>
 					</el-menu-item-group>
 				</el-submenu>
 
@@ -105,12 +117,20 @@
 			return {
 				username: '',
 				adminState: false, //判断是不是超级管理员
+				doctor:true,
+				admin:true,
 			}
 		},
 		mounted: function() {
 			this.username = sessionStorage.getItem("username");
 			if (this.username === ("admin")) {
 				this.adminState = true;
+			}
+			if(sessionStorage.getItem("doctor")==200){
+				this.doctor=false;
+			}
+			if(sessionStorage.getItem("admin")==200){
+				this.admin=false;
 			}
 		},
 		methods: {

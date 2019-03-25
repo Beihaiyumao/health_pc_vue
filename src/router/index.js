@@ -24,6 +24,7 @@ const components = {
 	questionInfo: () => import('../page/question/questionInfo'),
 	feedback: () => import('../page/admin/feedback'),
 	changePassword: () => import('../page/admin/changePassword'),
+	doctorInfo:()=>import('../page/doctor/doctorInfo'),
 }
 
 export default new Router({
@@ -186,6 +187,13 @@ export default new Router({
 						title: "修改密码"
 					},
 					component: components.changePassword
+				},
+				{
+					path: "doctorInfo",
+					meta: {
+						title: "医生个人中心"
+					},
+					component: components.doctorInfo
 				},
 			]
 		}
