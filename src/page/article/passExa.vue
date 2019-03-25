@@ -3,10 +3,10 @@
 		<el-table stripe v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
 		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="passExaList">
 			<!-- 组件的数据帮在这里:data="tableData" -->
-			<el-table-column prop="username" label="序号" width="100">
+			<el-table-column prop="username" label="序号" width="80">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
 			</el-table-column>
-			<el-table-column prop="title" label="文章标题" width="180">
+			<el-table-column prop="title" label="文章标题" width="160">
 			</el-table-column>
 			<el-table-column prop="article" label="导语" width="180">
 			</el-table-column>
@@ -110,18 +110,13 @@
 			},
 			//查看详情
 			getArticleInfo(id) {
-				this.$ajax({
-					method: 'get',
-					url: '/admin/blackUser?userId=' + this.userId + '&msg=' + this.msg,
-				}).then(e => {
-					console.log(e);
-					if (e.data.code == 100) {
-						this.$message.success(e.data.msg);
-						this.getPassExaArticle();
-					} else {
-						this.$message.error(e.data.msg);
+				this.$router.push({
+					path: '/navBar/articleInfo',
+					query: {
+						articleId: id,
+						deleteExaState:true,
 					}
-				})
+				});
 			},
 			//删除审核通过文章
 			deletePassExaArticle(id) {

@@ -42,7 +42,7 @@
 						<el-menu-item index="/navBar/doctorBlack">医生黑名单</el-menu-item>
 					</el-menu-item-group>
 				</el-submenu>
-				<el-submenu index="3">
+				<el-submenu index="3" v-if="adminState">
 					<template slot="title">
 						<i class="el-icon-news"></i>
 						<!-- <span>导航一</span> -->
@@ -87,7 +87,6 @@
 					</template>
 					<el-menu-item-group>
 						<el-menu-item index="/navBar/feedback">用户反馈</el-menu-item>
-						<!-- <el-menu-item index="/navBar/users">用户管理页</el-menu-item> -->
 					</el-menu-item-group>
 				</el-submenu>
 
@@ -105,15 +104,21 @@
 		data() {
 			return {
 				username: '',
+				adminState: false, //判断是不是超级管理员
 			}
 		},
 		mounted: function() {
 			this.username = sessionStorage.getItem("username");
+			if (this.username === ("admin")) {
+				this.adminState = true;
+			}
 		},
 		methods: {
+			//修改密码跳转路由
 			changePassword() {
 				this.$router.push("/navBar/changePassword");
 			},
+			//退出登陆
 			loginOut() {
 				sessionStorage.clear();
 				this.$router.push("/login");

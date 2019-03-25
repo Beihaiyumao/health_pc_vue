@@ -100,7 +100,7 @@
 			//删除问题
 			handleDelete(id) {
 				this.questionId = id;
-				this.$confirm('确定取消拉黑该医生, 是否继续?', '提示', {
+				this.$confirm('确定删除此问题?', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					type: 'warning'
@@ -127,6 +127,15 @@
 						this.$message.error(e.data.msg);
 					}
 				})
+			},
+			//查看问题详情
+			getQuestionInfo(id){
+				this.$router.push({
+					path: '/navBar/questionInfo',
+					query: {
+						questionId: id,
+					}
+				});
 			}
 		}
 	}

@@ -107,7 +107,9 @@
 				this.$router.push({
 					path: '/navBar/articleInfo',
 					query: {
-						articleId: id
+						articleId: id,
+						outExaState:true,
+						passExaState:true,
 					}
 				});
 			},

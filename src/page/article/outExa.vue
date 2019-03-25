@@ -3,7 +3,7 @@
 		<el-table stripe v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
 		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="outExaList">
 			<!-- 组件的数据帮在这里:data="tableData" -->
-			<el-table-column prop="username" label="序号" width="100">
+			<el-table-column prop="username" label="序号" width="80">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
 			</el-table-column>
 			<el-table-column prop="title" label="文章标题" width="180">
@@ -16,11 +16,12 @@
 				</template>
 			</el-table-column>
 
-			<el-table-column prop="author" label="作者" width="150">
+			<el-table-column prop="author" label="作者" width="120">
 			</el-table-column>
-			<el-table-column prop="createTime" label="时间" width="240">
+			<el-table-column prop="createTime" label="文章创建时间" width="160">
 			</el-table-column>
-
+			<el-table-column prop="changeAtricleStateTime" label="审核未通过时间" width="160">
+			</el-table-column>
 			<el-table-column label="操作" width="240">
 				<template slot-scope="scope">
 					<el-button @click="getArticleInfo(scope.row.articleId)" size="small" type="primary">
@@ -84,6 +85,9 @@
 					for (var i = 0; i < e.data.list.length; i++) {
 						this.outExaList[i].createTime = this.renderTime(e.data.list[i].createTime);
 					};
+					for (var i = 0; i < e.data.list.length; i++) {
+						this.outExaList[i].changeAtricleStateTime = this.renderTime(e.data.list[i].changeAtricleStateTime);
+					}
 				})
 			},
 			//时间转换
@@ -104,18 +108,14 @@
 			},
 			//查看详情
 			getArticleInfo(id) {
-				this.$ajax({
-					method: 'get',
-					url: '/admin/blackUser?userId=' + this.userId + '&msg=' + this.msg,
-				}).then(e => {
-					console.log(e);
-					if (e.data.code == 100) {
-						this.$message.success(e.data.msg);
-						this.getOutExaArticle();
-					} else {
-						this.$message.error(e.data.msg);
+				this.$router.push({
+					path: '/navBar/articleInfo',
+					query: {
+						articleId: id,
+						outExaState:false,
+						passExaState:true,
 					}
-				})
+				});
 			},
 			//审核通过文章
 			passExaArticle(id) {
