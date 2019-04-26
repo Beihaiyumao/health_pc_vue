@@ -11,7 +11,7 @@
 
 			<el-table-column prop="password" label="密码" width="120">
 			</el-table-column>
-			<el-table-column prop="sex" label="性别" width="70">
+			<el-table-column prop="sex" label="性别" width="70" :formatter="formatSex">
 			</el-table-column>
 			<el-table-column prop="email" label="邮箱" width="170">
 			</el-table-column>
@@ -64,6 +64,10 @@
 			this.getUserInfo();
 		},
 		methods: {
+			//性别显示转换
+			formatSex: function(row, column) {
+				return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
+			},
 			//获取用户列表
 			getUserInfo() {
 				this.$ajax({
@@ -83,11 +87,6 @@
 
 					for (var i = 0; i < e.data.list.length; i++) {
 						this.userLists[i].blackTime = this.renderTime(e.data.list[i].blackTime);
-						if (e.data.list[i].sex == 0) {
-							this.userLists[i].sex = '男';
-						} else {
-							this.userLists[i].sex = '女';
-						}
 					};
 				})
 			},

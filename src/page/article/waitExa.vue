@@ -10,17 +10,18 @@
 			</el-table-column>
 			<el-table-column prop="article" label="导语" width="180">
 			</el-table-column>
-			<el-table-column prop="pic" label="图片" width="150">
+			<el-table-column prop="pic" label="封面图片" width="150">
 				<template slot-scope="scope">
-					<img :src="scope.row.pic" class="avatar">
+					<img :src="scope.row.pic" class="avatar" style="height: 80px; width: 80px;">
 				</template>
 			</el-table-column>
 
 			<el-table-column prop="author" label="作者" width="150">
 			</el-table-column>
-			<el-table-column prop="createTime" label="文章创建时间" width="240">
+			<el-table-column prop="articleGenre" label="文章类别" width="150">
 			</el-table-column>
-
+			<el-table-column prop="createTime" label="文章创建时间" column-key="date" sortable :filter-method="filterHandler" width="240" :filters="articleGenre">
+			</el-table-column>
 			<el-table-column label="操作" width="240">
 				<template slot-scope="scope">
 					<el-button @click="getArticleInfo(scope.row.articleId)" size="small" type="primary">
@@ -57,14 +58,26 @@
 				articleId: '', //文章id
 				pages: '', //一共多少页
 				pageNum: 1, //当前页数
-				pageSize: 10 //每页多少数据
+				pageSize: 10 ,//每页多少数据
+				articleGenre:[],
 			}
 		},
 		mounted: function() {
 			this.loading = true;
 			this.getWaitExaArticle();
+			this.getArticleGenre();
 		},
 		methods: {
+			//获取文章类别列表
+			getArticleGenre() {
+				this.$ajax({
+					method: 'get',
+					url: '/admin/selectAllArticleGenre?pageSize=' + 100,
+				}).then(e => {
+					console.log(e);
+					this.articleGenre = e.data.list;
+				})
+			},
 			//获取待审核文章列表
 			getWaitExaArticle() {
 				this.$ajax({
@@ -83,6 +96,7 @@
 					this.loading = false;
 					for (var i = 0; i < e.data.list.length; i++) {
 						this.waitExaList[i].createTime = this.renderTime(e.data.list[i].createTime);
+						this.waitExaList[i].pic="https://xiaoyc.com.cn/health/"+e.data.list[i].pic;
 					};
 				})
 			},
@@ -108,8 +122,8 @@
 					path: '/navBar/articleInfo',
 					query: {
 						articleId: id,
-						outExaState:true,
-						passExaState:true,
+						outExaState: true,
+						passExaState: true,
 					}
 				});
 			},
@@ -143,6 +157,11 @@
 					}
 				})
 			},
+			//时间排序
+			filterHandler(value, row, column) {
+				const property = column['property'];
+				return row[property] === value;
+			}
 		}
 	}
 </script>

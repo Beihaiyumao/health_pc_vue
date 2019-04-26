@@ -195,4 +195,7 @@
 </script>
 
 <style>
+	#app {
+		margin-top: 0px;
+	}
 </style>

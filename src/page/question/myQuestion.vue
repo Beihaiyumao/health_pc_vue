@@ -1,31 +1,30 @@
 <template>
 	<div id="app">
 		<el-table stripe v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
-		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="doctorList">
+		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="questionAnswerList">
 			<!-- 组件的数据帮在这里:data="tableData" -->
-			<el-table-column prop="username" label="序号" width="75">
+			<el-table-column prop="username" label="序号" width="60">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
 			</el-table-column>
-			<el-table-column prop="username" label="姓名" width="120">
+			<el-table-column prop="userName" label="提问者用户名" width="120">
 			</el-table-column>
-			<el-table-column prop="password" label="密码" width="120">
+			<el-table-column prop="title" label="问题标题" width="150">
 			</el-table-column>
-			<el-table-column prop="sex" label="性别" width="80" :formatter="formatSex">
+			<el-table-column prop="sex" label="提问者性别" width="100">
 			</el-table-column>
-			<el-table-column prop="email" label="邮箱" width="120">
+			<el-table-column prop="createTime" label="提问时间" width="155">
 			</el-table-column>
-			<el-table-column prop="phone" label="电话" width="120">
+			<el-table-column prop="answerDetail" label="回答内容" width="200">
 			</el-table-column>
-			<el-table-column prop="hospital" label="所属医院" width="155">
+			<el-table-column prop="answerTime" label="回答时间" width="155">
 			</el-table-column>
-			<el-table-column prop="blackMsg" label="拉黑原因" width="155">
-			</el-table-column>
-			<el-table-column prop="blackTime" label="拉黑时间" width="155">
-			</el-table-column>
-			<el-table-column label="操作" width="155">
+			<el-table-column label="操作" width="240">
 				<template slot-scope="scope">
-					<el-button @click="cancelDeleteDoctor(scope.row.doctorId)" size="small" type="danger">
-						取消拉黑
+					<el-button @click="getQuestionInfo(scope.row.questionId)" size="small" type="primary">
+						查看详情
+					</el-button>
+					<el-button @click="handleDelete(scope.row.answerId)" size="small" type="danger">
+						删除回答
 					</el-button>
 				</template>
 			</el-table-column>
@@ -45,13 +44,12 @@
 		name: 'app',
 		data() {
 			return {
-				doctorList: [], //用户信息
+				questionAnswerList: [], //用户信息
 				currentPage: 1, //页数
 				total: 0,
 				isFirstPage: true,
 				isLastPage: false,
-				doctorId: '',
-				msg: '',
+				questionAnswerId: '',
 				loading: '',
 				pages: '', //一共多少页
 				pageNum: 1, //当前页数
@@ -60,22 +58,19 @@
 		},
 		mounted: function() {
 			this.loading = true;
-			this.getDeleteDoctorInfo();
+			this.getquestionAnswerList();
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function(row, column) {
-				return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
-			},
-			//获取医生列表
-			getDeleteDoctorInfo() {
+			//获取问题列表
+			getquestionAnswerList() {
 				this.$ajax({
 					method: 'get',
-					url: '/admin/allDeleteDoctor?currentPage=' + this.currentPage + '&pageSize=' + this.pageSize,
+					url: '/question/selectMyAnswerQuestion?currentPage=' + this.currentPage + '&pageSize=' + this.pageSize
+					+'&doctorId='+sessionStorage.getItem("doctorId"),
 
 				}).then(e => {
 					console.log(e);
-					this.doctorList = e.data.list;
+					this.questionAnswerList = e.data.list;
 					this.total = e.data.total;
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
@@ -84,7 +79,13 @@
 					this.pageSize = e.data.pageSize;
 					this.loading = false;
 					for (var i = 0; i < e.data.list.length; i++) {
-						this.doctorList[i].blackTime = this.renderTime(e.data.list[i].blackTime);
+						this.questionAnswerList[i].createTime = this.renderTime(e.data.list[i].createTime);
+						this.questionAnswerList[i].answerTime = this.renderTime(e.data.list[i].answerTime);
+						if (e.data.list[i].sex == 0) {
+							this.questionAnswerList[i].sex = '男';
+						} else {
+							this.questionAnswerList[i].sex = '女';
+						}
 					};
 				})
 			},
@@ -96,23 +97,23 @@
 			//选择第几页
 			changeCurrentPage(vl) {
 				this.currentPage = vl;
-				this.getDeleteDoctorInfo();
+				this.getquestionAnswerList();
 
 			},
 			//每页显示多少条数据
 			handleSizeChange(val) {
 				this.pageSize = val;
-				this.getDeleteDoctorInfo();
+				this.getquestionAnswerList();
 			},
-			//取消拉黑
-			cancelDeleteDoctor(id) {
-				this.doctorId = id;
-				this.$confirm('确定取消拉黑该医生, 是否继续?', '提示', {
+			//删除回答
+			handleDelete(id) {
+				this.answerId = id;
+				this.$confirm('确定删除此回答?', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					type: 'warning'
 				}).then(() => {
-					this.sureCancelDeleteDoctor();
+					this.suerDeleteuestionAnswer();
 				}).catch(() => {
 					this.$message({
 						type: 'info',
@@ -120,20 +121,29 @@
 					});
 				});
 			},
-			//确定取消拉黑医生
-			sureCancelDeleteDoctor() {
+			//确定删除回答
+			suerDeleteuestionAnswer() {
 				this.$ajax({
 					method: 'get',
-					url: '/admin/cancelBlackDoct?doctorId=' + this.doctorId,
+					url: '/question/deleteQuestionAnswerById?answerId=' + this.answerId,
 				}).then(e => {
 					console.log(e);
 					if (e.data.code == 100) {
 						this.$message.success(e.data.msg);
-						this.getDeleteDoctorInfo();
+						this.getquestionAnswerList();
 					} else {
 						this.$message.error(e.data.msg);
 					}
 				})
+			},
+			//查看问题详情
+			getQuestionInfo(id){
+				this.$router.push({
+					path: '/navBar/questionInfo',
+					query: {
+						questionId: id,
+					}
+				});
 			}
 		}
 	}

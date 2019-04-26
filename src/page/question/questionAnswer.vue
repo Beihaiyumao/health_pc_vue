@@ -6,11 +6,11 @@
 			<el-table-column prop="username" label="序号" width="60">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
 			</el-table-column>
-			<el-table-column prop="userName" label="提问者用户名" width="100">
+			<el-table-column prop="userName" label="提问者用户名" width="120">
 			</el-table-column>
 			<el-table-column prop="title" label="问题标题" width="150">
 			</el-table-column>
-			<el-table-column prop="sex" label="提问者性别" width="100">
+			<el-table-column prop="sex" label="提问者性别" width="100" :formatter="formatSex">
 			</el-table-column>
 			<el-table-column prop="createTime" label="提问时间" width="155">
 			</el-table-column>
@@ -62,6 +62,10 @@
 			this.getquestionAnswerList();
 		},
 		methods: {
+			//性别显示转换
+			formatSex: function(row, column) {
+				return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
+			},
 			//获取问题列表
 			getquestionAnswerList() {
 				this.$ajax({
@@ -81,11 +85,6 @@
 					for (var i = 0; i < e.data.list.length; i++) {
 						this.questionAnswerList[i].createTime = this.renderTime(e.data.list[i].createTime);
 						this.questionAnswerList[i].answerTime = this.renderTime(e.data.list[i].answerTime);
-						if (e.data.list[i].sex == 0) {
-							this.questionAnswerList[i].sex = '男';
-						} else {
-							this.questionAnswerList[i].sex = '女';
-						}
 					};
 				})
 			},

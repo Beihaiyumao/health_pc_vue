@@ -10,19 +10,19 @@
 			<el-col :span="24"><a>{{createTime}}</a></el-col>
 		</el-row>
 		<el-row>
-			<el-col :span="3">
+			<el-col :span="7">
 				<el-button @click="backList" size="small" type="primary">
 					返回
 				</el-button>
 			</el-col>
-			<el-col :span="18">
+			<el-col :span="10">
 				<a v-html="content"></a>
 			</el-col>
-			<el-col :span="3">
-				<el-button @click="passExaArticle" size="small" type="warning" v-if="passExaState">
+			<el-col :span="7">
+				<el-button @click="passExaArticle" size="small" type="warning" v-if="passExaState&&admin">
 					审核通过
 				</el-button><br /><br />
-				<el-button @click="outExaArticle" size="small" type="danger" v-if="outExaState">
+				<el-button @click="outExaArticle" size="small" type="danger" v-if="outExaState&&admin">
 					审核不通过
 				</el-button><br /><br />
 				<el-button @click="deletePassExaArticle" size="small" type="danger" v-if="deleteExaState">
@@ -49,6 +49,9 @@
 				passExaState:false,
 				outExaState:false,
 				deleteExaState:false,
+				doctor: false,
+				admin: false,
+				adminState: false, //判断是不是超级管理员
 			}
 		},
 		mounted: function() {
@@ -58,6 +61,16 @@
 			this.deleteExaState=this.$route.query.deleteExaState;
 			this.loading = true;
 			this.getArticleInfo();
+			this.username = sessionStorage.getItem("username");
+			if (this.username == "admin") {
+				this.adminState = true;
+			}
+			if (sessionStorage.getItem("doctor") == 200) {
+				this.doctor = true;
+			}
+			if (sessionStorage.getItem("admin") == 200) {
+				this.admin = true;
+			}
 		},
 		methods: {
 			//根据文章id获取文章详情
@@ -74,7 +87,7 @@
 					this.createTime = this.renderTime(e.data.createTime);
 					this.loading = false;
 					this.title = e.data.title;
-					this.pic = e.data.pic;
+					this.pic = "https://xiaoyc.com.cn/health/"+e.data.pic;
 				})
 			},
 			//时间转换
@@ -183,4 +196,7 @@
 </script>
 
 <style>
+		#app {
+		margin-top: 0px;
+	}
 </style>

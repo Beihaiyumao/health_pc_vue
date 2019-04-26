@@ -1,18 +1,18 @@
 <template>
 	<div>
-		<el-form :model="admin" :rules="rules" ref="admin" label-width="100px" class="demo-ruleForm">
+		<el-form :model="doctor" :rules="rules" ref="doctor" label-width="100px" class="demo-ruleForm">
 			<el-form-item label="旧密码" prop="opassword" style='width: 40%; margin-left:30%;'>
-				<el-input  type='password' v-model="admin.opassword"></el-input>
+				<el-input  type='password' v-model="doctor.opassword"></el-input>
 			</el-form-item>
 			<el-form-item label="新密码" prop="password" style='width: 40%; margin-left:30%;'>
-				<el-input type='password' v-model="admin.password"></el-input>
+				<el-input type='password' v-model="doctor.password"></el-input>
 			</el-form-item>
 			<el-form-item label="确认密码" prop="tpassword" style='width: 40%; margin-left:30%;'>
-				<el-input type='password' v-model="admin.tpassword"></el-input>
+				<el-input type='password' v-model="doctor.tpassword"></el-input>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" @click="submitForm">提交</el-button>
-				<el-button @click="resetForms('admin')">重置</el-button>
+				<el-button @click="resetForms('doctor')">重置</el-button>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -22,18 +22,18 @@
 	export default {
 		data() {
 			var validatePass2 = (rule, value, callback) => {
-				if (value !== this.admin.password) {
+				if (value !== this.doctor.password) {
 					callback(new Error('两次输入密码不一致!'));
 				} else {
 					callback();
 				}
 			};
 			return {
-				admin: {
+				doctor: {
 					opassword: '',
 					password: '',
 					tpassword: '',
-					adminId:sessionStorage.getItem("adminId"),
+					doctorId:sessionStorage.getItem("doctorId"),
 				},
 				rules: {
 					opassword: [{
@@ -79,7 +79,7 @@
 			}
 		},
 		mounted: function() {
-			this.adminId = sessionStorage.getItem("adminId");
+			this.doctorId = sessionStorage.getItem("doctorId");
 		},
 		methods: {
 			submitForm() {
@@ -87,7 +87,7 @@
 				if (checkUserInp) {
 					this.$ajax({
 							method:'GET',
-							url:'/admin/changePassword?adminId='+this.admin.adminId+'&password='+this.admin.password+'&opassword='+this.admin.opassword,
+							url:'/doctor/updatePassword?doctorId='+this.doctor.doctorId+'&newPassword='+this.doctor.password+'&oldPassword='+this.doctor.opassword,
 						}).then(e=>{
 							console.log(e);
 							if(e.data.code==100){
@@ -105,13 +105,13 @@
 			},
 			//检查用户输入情况
 			checkUserInput() {
-				if (this.admin.opassword == '' || this.admin.opassword.length < 6 || this.admin.opassword.length > 12) {
+				if (this.doctor.opassword == '' || this.doctor.opassword.length < 6 || this.doctor.opassword.length > 12) {
 					this.$message.warning("请输入合法的旧密码");
 					return false;
-				} else if (this.admin.password == '' || this.admin.password.length < 6 || this.admin.password.length > 12) {
+				} else if (this.doctor.password == '' || this.doctor.password.length < 6 || this.doctor.password.length > 12) {
 					this.$message.warning("请输入合法的密码");
 					return false;
-				} else if (this.admin.tpassword != this.admin.password) {
+				} else if (this.doctor.tpassword != this.doctor.password) {
 					this.$message.warning("两次密码不一致");
 					return false;
 				}

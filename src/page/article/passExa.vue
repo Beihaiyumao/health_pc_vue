@@ -12,11 +12,14 @@
 			</el-table-column>
 			<el-table-column prop="pic" label="图片" width="150">
 				<template slot-scope="scope">
-					<img :src="scope.row.pic" class="avatar">
+					<img :src="scope.row.pic" class="avatar" style="height: 80px; width: 80px;">
 				</template>
 			</el-table-column>
 
 			<el-table-column prop="author" label="作者" width="130">
+				
+			</el-table-column>
+			<el-table-column prop="articleGenre" label="文章类别" width="150">
 			</el-table-column>
 			<el-table-column prop="createTime" label="创建时间" width="160">
 			</el-table-column>
@@ -86,10 +89,9 @@
 					this.loading = false;
 					for (var i = 0; i < e.data.list.length; i++) {
 						this.passExaList[i].createTime = this.renderTime(e.data.list[i].createTime);
-					};
-					for (var i = 0; i < e.data.list.length; i++) {
 						this.passExaList[i].changeAtricleStateTime = this.renderTime(e.data.list[i].changeAtricleStateTime);
-					}
+						this.passExaList[i].pic="https://xiaoyc.com.cn/health/"+e.data.list[i].pic;
+					};
 				})
 			},
 			//时间转换

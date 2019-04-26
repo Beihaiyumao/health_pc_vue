@@ -3,21 +3,25 @@
 		<el-table stripe v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
 		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="questionList">
 			<!-- 组件的数据帮在这里:data="tableData" -->
-			<el-table-column prop="username" label="序号" width="250">
+			<el-table-column prop="username" label="序号" width="180">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
 			</el-table-column>
-			<el-table-column prop="title" label="问题标题" width="250">
+			<el-table-column prop="username" label="提问者名称" width="180">
 			</el-table-column>
-			<el-table-column prop="sex" label="提问者性别" width="250">
+			<el-table-column prop="sex" label="提问者性别" width="180" :formatter="formatSex">
 			</el-table-column>
-			<el-table-column prop="createTime" label="提问时间" width="250">
+			<el-table-column prop="title" label="问题标题" width="240">
 			</el-table-column>
-			<el-table-column label="操作" width="250">
+			<el-table-column prop="questionGenre" label="归属类型" width="180">
+			</el-table-column>
+			<el-table-column prop="createTime" label="提问时间" width="180">
+			</el-table-column>
+			<el-table-column label="操作" width="180">
 				<template slot-scope="scope">
 					<el-button @click="getQuestionInfo(scope.row.questionId)" size="small" type="primary">
 						查看详情
 					</el-button>
-					<el-button @click="handleDelete(scope.row.questionId)" size="small" type="danger">
+					<el-button @click="handleDelete(scope.row.questionId)" size="small" type="danger" v-if="admin">
 						删除
 					</el-button>
 				</template>
@@ -47,19 +51,37 @@
 				loading: '',
 				pages: '', //一共多少页
 				pageNum: 1, //当前页数
-				pageSize: 10 //每页多少数据
+				pageSize: 10 ,//每页多少数据
+				genre:'',
+				doctor: false,
+				admin: false,
+				adminState: false, //判断是不是超级管理员
 			}
 		},
 		mounted: function() {
 			this.loading = true;
 			this.getQuestionList();
+			this.username = sessionStorage.getItem("username");
+			if (this.username == "admin") {
+				this.adminState = true;
+			}
+			if (sessionStorage.getItem("doctor") == 200) {
+				this.doctor = true;
+			}
+			if (sessionStorage.getItem("admin") == 200) {
+				this.admin = true;
+			}
 		},
 		methods: {
+			//性别显示转换
+			formatSex: function(row, column) {
+				return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
+			},
 			//获取问题列表
 			getQuestionList() {
 				this.$ajax({
 					method: 'get',
-					url: '/question/allQuestion?currentPage=' + this.currentPage + '&pageSize=' + this.pageSize,
+					url: '/question/allQuestion?currentPage=' + this.currentPage + '&pageSize=' + this.pageSize+'&genre='+this.genre,
 
 				}).then(e => {
 					console.log(e);
@@ -73,11 +95,6 @@
 					this.loading = false;
 					for (var i = 0; i < e.data.list.length; i++) {
 						this.questionList[i].createTime = this.renderTime(e.data.list[i].createTime);
-						if (e.data.list[i].sex == 0) {
-							this.questionList[i].sex = '男';
-						} else {
-							this.questionList[i].sex = '女';
-						}
 					};
 				})
 			},
@@ -129,7 +146,7 @@
 				})
 			},
 			//查看问题详情
-			getQuestionInfo(id){
+			getQuestionInfo(id) {
 				this.$router.push({
 					path: '/navBar/questionInfo',
 					query: {

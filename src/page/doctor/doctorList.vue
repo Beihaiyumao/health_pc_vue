@@ -11,7 +11,7 @@
 
 			<el-table-column prop="password" label="密码" width="120">
 			</el-table-column>
-			<el-table-column prop="sex" label="性别" width="100">
+			<el-table-column prop="sex" label="性别" width="100" :formatter="formatSex">
 			</el-table-column>
 			<el-table-column prop="email" label="邮箱" width="150">
 			</el-table-column>
@@ -62,6 +62,10 @@
 			this.getDoctorInfo();
 		},
 		methods: {
+			//性别显示转换
+			formatSex: function(row, column) {
+				return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
+			},
 			//获取医生列表
 			getDoctorInfo() {
 				this.$ajax({
@@ -80,11 +84,6 @@
 					this.loading = false;
 					for (var i = 0; i < e.data.list.length; i++) {
 						this.doctorList[i].createTime = this.renderTime(e.data.list[i].createTime);
-						if (e.data.list[i].sex == 0) {
-							this.doctorList[i].sex = '男';
-						} else {
-							this.doctorList[i].sex = '女';
-						}
 					};
 				})
 			},

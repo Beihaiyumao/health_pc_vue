@@ -1,31 +1,37 @@
 <template>
 	<div id="app">
 		<el-table stripe v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
-		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="doctorList">
+		 element-loading-background="rgba(0, 0, 0, 0.8)" :data="myArticle">
 			<!-- 组件的数据帮在这里:data="tableData" -->
-			<el-table-column prop="username" label="序号" width="75">
+			<el-table-column prop="username" label="序号" width="100">
 				<template slot-scope="scope"> <span>{{scope.$index + 1}} </span> </template>
 			</el-table-column>
-			<el-table-column prop="username" label="姓名" width="120">
+			<el-table-column prop="title" label="文章标题" width="150">
 			</el-table-column>
-			<el-table-column prop="password" label="密码" width="120">
+			<el-table-column prop="article" label="导语" width="180">
 			</el-table-column>
-			<el-table-column prop="sex" label="性别" width="80" :formatter="formatSex">
-			</el-table-column>
-			<el-table-column prop="email" label="邮箱" width="120">
-			</el-table-column>
-			<el-table-column prop="phone" label="电话" width="120">
-			</el-table-column>
-			<el-table-column prop="hospital" label="所属医院" width="155">
-			</el-table-column>
-			<el-table-column prop="blackMsg" label="拉黑原因" width="155">
-			</el-table-column>
-			<el-table-column prop="blackTime" label="拉黑时间" width="155">
-			</el-table-column>
-			<el-table-column label="操作" width="155">
+			<el-table-column prop="pic" label="图片" width="120">
 				<template slot-scope="scope">
-					<el-button @click="cancelDeleteDoctor(scope.row.doctorId)" size="small" type="danger">
-						取消拉黑
+					<img :src="scope.row.pic" class="avatar" style="height: 80px; width: 80px;">
+				</template>
+			</el-table-column>
+
+			<el-table-column prop="author" label="作者" width="120">
+			</el-table-column>
+			<el-table-column prop="articleGenre" label="文章类别" width="120">
+			</el-table-column>
+			<el-table-column prop="articleState" label="文章审核状态" width="120">
+			</el-table-column>
+			<el-table-column prop="createTime" label="文章创建时间" width="240">
+			</el-table-column>
+
+			<el-table-column label="操作" width="240">
+				<template slot-scope="scope">
+					<el-button @click="getArticleInfo(scope.row.articleId)" size="small" type="primary">
+						查看详情
+					</el-button>
+					<el-button @click="deleteArticle(scope.row.articleId)" size="small" type="danger">
+						删除
 					</el-button>
 				</template>
 			</el-table-column>
@@ -45,14 +51,14 @@
 		name: 'app',
 		data() {
 			return {
-				doctorList: [], //用户信息
+				myArticle: [], //文章信息
 				currentPage: 1, //页数
 				total: 0,
 				isFirstPage: true,
 				isLastPage: false,
-				doctorId: '',
 				msg: '',
 				loading: '',
+				articleId: '', //文章id
 				pages: '', //一共多少页
 				pageNum: 1, //当前页数
 				pageSize: 10 //每页多少数据
@@ -60,22 +66,19 @@
 		},
 		mounted: function() {
 			this.loading = true;
-			this.getDeleteDoctorInfo();
+			this.getMyArticle();
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function(row, column) {
-				return row.sex == 0 ? '男' : row.sex == 1 ? '女' : '未知';
-			},
-			//获取医生列表
-			getDeleteDoctorInfo() {
+			//获取我发布的文章列表
+			getMyArticle() {
 				this.$ajax({
 					method: 'get',
-					url: '/admin/allDeleteDoctor?currentPage=' + this.currentPage + '&pageSize=' + this.pageSize,
+					url: '/healthyArticle/selectAllMyCreateHealthArticle?currentPage=' + this.currentPage + '&pageSize=' + this.pageSize
+					+'&userId='+sessionStorage.getItem("doctorId")+'&role='+'000100000020',
 
 				}).then(e => {
 					console.log(e);
-					this.doctorList = e.data.list;
+					this.myArticle = e.data.list;
 					this.total = e.data.total;
 					this.isFirstPage = e.data.isFirstPage;
 					this.isLastPage = e.data.isLastPage;
@@ -84,7 +87,15 @@
 					this.pageSize = e.data.pageSize;
 					this.loading = false;
 					for (var i = 0; i < e.data.list.length; i++) {
-						this.doctorList[i].blackTime = this.renderTime(e.data.list[i].blackTime);
+						this.myArticle[i].createTime = this.renderTime(e.data.list[i].createTime);
+						this.myArticle[i].pic="https://xiaoyc.com.cn/health/"+e.data.list[i].pic;
+						if(e.data.list[i].articleState == '000000000010'){
+							this.myArticle[i].articleState="未审核";
+						}else if(e.data.list[i].articleState=='000000000020'){
+							this.myArticle[i].articleState="审核通过";
+						}else{
+							this.myArticle[i].articleState="审核不通过";
+						}
 					};
 				})
 			},
@@ -96,23 +107,34 @@
 			//选择第几页
 			changeCurrentPage(vl) {
 				this.currentPage = vl;
-				this.getDeleteDoctorInfo();
+				this.getMyArticle();
 
 			},
 			//每页显示多少条数据
 			handleSizeChange(val) {
 				this.pageSize = val;
-				this.getDeleteDoctorInfo();
+				this.getMyArticle();
 			},
-			//取消拉黑
-			cancelDeleteDoctor(id) {
-				this.doctorId = id;
-				this.$confirm('确定取消拉黑该医生, 是否继续?', '提示', {
+			//查看详情 params 不显示参数
+			getArticleInfo(id) {
+				this.$router.push({
+					path: '/navBar/articleInfo',
+					query: {
+						articleId: id,
+						outExaState:true,
+						passExaState:true,
+					}
+				});
+			},
+			//删除文章
+			deleteArticle(id) {
+				this.articleId = id;
+				this.$confirm('确定删除此文章?', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					type: 'warning'
 				}).then(() => {
-					this.sureCancelDeleteDoctor();
+					this.suerDeletArticle();
 				}).catch(() => {
 					this.$message({
 						type: 'info',
@@ -120,21 +142,20 @@
 					});
 				});
 			},
-			//确定取消拉黑医生
-			sureCancelDeleteDoctor() {
+			suerDeletArticle() {
 				this.$ajax({
 					method: 'get',
-					url: '/admin/cancelBlackDoct?doctorId=' + this.doctorId,
+					url: '/healthyArticle/deleteHealthyArticleById?articleId=' + this.articleId,
 				}).then(e => {
 					console.log(e);
 					if (e.data.code == 100) {
 						this.$message.success(e.data.msg);
-						this.getDeleteDoctorInfo();
+						this.getMyArticle();
 					} else {
 						this.$message.error(e.data.msg);
 					}
 				})
-			}
+			},
 		}
 	}
 </script>

@@ -85,7 +85,7 @@
 						sessionStorage.setItem("username", e.data.object.username);
 						sessionStorage.setItem("adminId", e.data.object.adminId);
 						sessionStorage.setItem("admin", 200);
-						console.log(e);
+						localStorage.setItem("access_token",true);
 					} else {
 						this.$message.error(e.data.msg);
 					}
@@ -106,7 +106,7 @@
 						sessionStorage.setItem("username", e.data.object.username);
 						sessionStorage.setItem("doctorId", e.data.object.doctorId);
 						sessionStorage.setItem("doctor", 200);
-						console.log(e);
+						localStorage.setItem("access_token",true);
 					} else {
 						this.$message.error(e.data.msg);
 					}
